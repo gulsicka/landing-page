@@ -4,32 +4,14 @@
   "description": "Smart content delivery and analytics platform",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node index.js"
   },
-  "keywords": [
-    "content",
-    "delivery",
-    "analytics"
-  ],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "cookie-parser": "^1.4.6",
-    "express": "^4.18.2",
-    "express-useragent": "^1.0.15"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.2"
+    "express": "4.18.2",
+    "express-useragent": "1.0.15",
+    "cookie-parser": "1.4.6"
   },
   "engines": {
     "node": ">=14.0.0"
-  },
-  "repository": {
-    "type": "git",
-  },
-  "bugs": {
-    "url": "https://github.com/gulsicka/content-delivery-service/issues"
-  },
-  "homepage": "https://github.com/gulsicka/content-delivery-service#readme"
+  }
 }
