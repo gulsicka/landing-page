@@ -466,221 +466,229 @@ function analyzeHeaders(headers) {
 // Bot detection function
 function isBot(req) {
     const ua = req.useragent;
-    const ip = req.ip;
-    const now = Date.now();
-    
-    // Debug logs
-    console.log('User Agent:', ua.source);
-    console.log('Cookies:', req.cookies);
-    console.log('Headers:', req.headers);
-    console.log('IP:', ip);
-    
-    // Rate limiting and pattern detection
-    if (!requestPatterns.has(ip)) {
-        requestPatterns.set(ip, {
-            count: 0,
-            firstSeen: now,
-            lastSeen: now,
-            userAgents: new Set(),
-            paths: new Set(),
-            headers: new Set(),
-            timing: []
-        });
-    }
-    
-    const pattern = requestPatterns.get(ip);
-    pattern.count++;
-    pattern.lastSeen = now;
-    pattern.userAgents.add(ua.source);
-    pattern.paths.add(req.path);
-    pattern.headers.add(JSON.stringify(req.headers));
-    pattern.timing.push(now);
-    
-    // Clean up old patterns (older than 1 hour)
-    const oneHourAgo = now - 3600000;
-    pattern.timing = pattern.timing.filter(time => time > oneHourAgo);
-    
-    // Check for suspicious patterns
-    const isSuspiciousPattern = 
-        // Too many requests in a short time
-        pattern.timing.length > 100 ||
-        // Too many different user agents
-        pattern.userAgents.size > 3 ||
-        // Too many different paths
-        pattern.paths.size > 10 ||
-        // Too many different headers
-        pattern.headers.size > 5;
-    
-    // Browser fingerprinting
-    const fingerprint = {
-        // Screen properties
-        screenWidth: req.headers['sec-ch-viewport-width'],
-        screenHeight: req.headers['sec-ch-viewport-height'],
-        colorDepth: req.headers['sec-ch-color-depth'],
-        pixelRatio: req.headers['sec-ch-device-pixel-ratio'],
-        
-        // Browser capabilities
-        hasTouch: req.headers['sec-ch-touch-enabled'],
-        hasPointer: req.headers['sec-ch-pointer-enabled'],
-        hasHover: req.headers['sec-ch-hover-enabled'],
-        
-        // Hardware
-        deviceMemory: req.headers['sec-ch-device-memory'],
-        hardwareConcurrency: req.headers['sec-ch-hardware-concurrency'],
-        
-        // Network
-        connectionType: req.headers['sec-ch-connection-type'],
-        downlink: req.headers['sec-ch-downlink'],
-        rtt: req.headers['sec-ch-rtt'],
-        ect: req.headers['sec-ch-ect'],
-        
-        // Platform
-        platform: req.headers['sec-ch-ua-platform'],
-        platformVersion: req.headers['sec-ch-ua-platform-version'],
-        mobile: req.headers['sec-ch-ua-mobile'],
-        model: req.headers['sec-ch-ua-model'],
-        architecture: req.headers['sec-ch-ua-arch'],
-        bitness: req.headers['sec-ch-ua-bitness'],
-        wow64: req.headers['sec-ch-ua-wow64']
-    };
-    
-    // Check for missing or suspicious fingerprint values
-    const hasSuspiciousFingerprint = 
-        !fingerprint.screenWidth ||
-        !fingerprint.screenHeight ||
-        !fingerprint.colorDepth ||
-        !fingerprint.pixelRatio ||
-        !fingerprint.hasTouch ||
-        !fingerprint.hasPointer ||
-        !fingerprint.hasHover ||
-        !fingerprint.deviceMemory ||
-        !fingerprint.hardwareConcurrency ||
-        !fingerprint.connectionType ||
-        !fingerprint.downlink ||
-        !fingerprint.rtt ||
-        !fingerprint.ect ||
-        !fingerprint.platform ||
-        !fingerprint.platformVersion ||
-        !fingerprint.mobile ||
-        !fingerprint.model ||
-        !fingerprint.architecture ||
-        !fingerprint.bitness;
-    
-    // Check for browser inconsistencies
-    const hasBrowserInconsistencies = 
-        // Check if mobile flag matches viewport
-        (fingerprint.mobile === '?1' && parseInt(fingerprint.screenWidth) > 1024) ||
-        // Check if device memory is reasonable
-        (fingerprint.deviceMemory && (parseFloat(fingerprint.deviceMemory) < 0.5 || parseFloat(fingerprint.deviceMemory) > 32)) ||
-        // Check if hardware concurrency is reasonable
-        (fingerprint.hardwareConcurrency && (parseInt(fingerprint.hardwareConcurrency) < 1 || parseInt(fingerprint.hardwareConcurrency) > 32)) ||
-        // Check if screen dimensions are reasonable
-        (fingerprint.screenWidth && (parseInt(fingerprint.screenWidth) < 100 || parseInt(fingerprint.screenWidth) > 7680)) ||
-        (fingerprint.screenHeight && (parseInt(fingerprint.screenHeight) < 100 || parseInt(fingerprint.screenHeight) > 4320));
-    
-    // Check for automation indicators
-    const hasAutomationIndicators = 
-        req.headers['x-automation-tool'] ||
-        req.headers['x-selenium-version'] ||
-        req.headers['x-playwright-version'] ||
-        req.headers['x-cypress-version'] ||
-        req.headers['x-puppeteer-version'] ||
-        req.headers['x-nightmare-version'] ||
-        req.headers['x-phantomjs-version'] ||
-        req.headers['x-headless-version'] ||
-        req.headers['x-browserless-version'] ||
-        req.headers['x-webdriver-version'] ||
-        req.headers['x-selenium-ide-version'] ||
-        req.headers['x-selenium-rc-version'] ||
-        req.headers['x-selenium-grid-version'] ||
-        req.headers['x-selenium-standalone-version'] ||
-        req.headers['x-selenium-server-version'] ||
-        req.headers['x-selenium-node-version'] ||
-        req.headers['x-selenium-hub-version'] ||
-        req.headers['x-selenium-remote-version'] ||
-        req.headers['x-selenium-remote-webdriver-version'] ||
-        req.headers['x-selenium-remote-webdriver-standalone-version'] ||
-        req.headers['x-selenium-remote-webdriver-server-version'] ||
-        req.headers['x-selenium-remote-webdriver-node-version'] ||
-        req.headers['x-selenium-remote-webdriver-hub-version'];
-    
-    // Check for bot-like behavior
-    const hasBotBehavior = 
-        // Missing common headers
-        !req.headers['accept-language'] ||
-        !req.headers['accept-encoding'] ||
-        !req.headers['cache-control'] ||
-        !req.headers['connection'] ||
-        !req.headers['host'] ||
-        !req.headers['upgrade-insecure-requests'] ||
-        
-        // Missing security headers
-        !req.headers['sec-fetch-dest'] ||
-        !req.headers['sec-fetch-mode'] ||
-        !req.headers['sec-fetch-site'] ||
-        !req.headers['sec-fetch-user'] ||
-        
-        // Missing browser features
-        !req.headers['dnt'] ||
-        !req.headers['viewport-width'] ||
-        !req.headers['device-memory'] ||
-        !req.headers['rtt'] ||
-        !req.headers['downlink'] ||
-        !req.headers['ect'] ||
-        
-        // Missing UI preferences
-        !req.headers['sec-ch-prefers-color-scheme'] ||
-        !req.headers['sec-ch-prefers-reduced-motion'] ||
-        !req.headers['sec-ch-prefers-reduced-transparency'] ||
-        !req.headers['sec-ch-prefers-contrast'] ||
-        !req.headers['sec-ch-prefers-reduced-data'] ||
-        !req.headers['sec-ch-prefers-reduced-layout-shift'] ||
-        !req.headers['sec-ch-prefers-reduced-animation'] ||
-        !req.headers['sec-ch-prefers-reduced-transition'];
-    
-    // Check for JavaScript support
-    const hasJS = req.cookies.jsEnabled === 'true';
-    
-    // Check for social media crawlers
+
     const isSocialMediaBot = socialMediaPatterns.some(pattern => pattern.test(ua.source));
-    
-    // Check for common bots
     const isRegularBot = botPatterns.some(pattern => pattern.test(ua.source));
     
-    // Statistical detection
-    const isStatisticalBot = statisticalDetectBot(req, pattern);
+    // Remove or reduce other checks
+    return isSocialMediaBot || isRegularBot;
+    // const ip = req.ip;
+    // const now = Date.now();
     
-    // Add ML-based detection
-    const isMLBot = mlDetectBot(req, pattern);
+    // // Debug logs
+    // console.log('User Agent:', ua.source);
+    // console.log('Cookies:', req.cookies);
+    // console.log('Headers:', req.headers);
+    // console.log('IP:', ip);
     
-    // Debug logs
-    console.log('Is Suspicious Pattern:', isSuspiciousPattern);
-    console.log('Has Suspicious Fingerprint:', hasSuspiciousFingerprint);
-    console.log('Has Browser Inconsistencies:', hasBrowserInconsistencies);
-    console.log('Has Automation Indicators:', hasAutomationIndicators);
-    console.log('Has Bot Behavior:', hasBotBehavior);
-    console.log('Has JS:', hasJS);
-    console.log('Is Social Media Bot:', isSocialMediaBot);
-    console.log('Is Regular Bot:', isRegularBot);
-    console.log('Is Statistical Bot:', isStatisticalBot);
-    console.log('Is ML Bot:', isMLBot);
+    // // Rate limiting and pattern detection
+    // if (!requestPatterns.has(ip)) {
+    //     requestPatterns.set(ip, {
+    //         count: 0,
+    //         firstSeen: now,
+    //         lastSeen: now,
+    //         userAgents: new Set(),
+    //         paths: new Set(),
+    //         headers: new Set(),
+    //         timing: []
+    //     });
+    // }
     
-    // Return true if any bot indicators are present, including ML detection
-    return isSuspiciousPattern ||
-           hasSuspiciousFingerprint ||
-           hasBrowserInconsistencies ||
-           hasAutomationIndicators ||
-           hasBotBehavior ||
-           !hasJS ||
-           isSocialMediaBot ||
-           isRegularBot ||
-           isStatisticalBot ||
-           isMLBot;
+    // const pattern = requestPatterns.get(ip);
+    // pattern.count++;
+    // pattern.lastSeen = now;
+    // pattern.userAgents.add(ua.source);
+    // pattern.paths.add(req.path);
+    // pattern.headers.add(JSON.stringify(req.headers));
+    // pattern.timing.push(now);
+    
+    // // Clean up old patterns (older than 1 hour)
+    // const oneHourAgo = now - 3600000;
+    // pattern.timing = pattern.timing.filter(time => time > oneHourAgo);
+    
+    // // Check for suspicious patterns
+    // const isSuspiciousPattern = 
+    //     // Too many requests in a short time
+    //     pattern.timing.length > 100 ||
+    //     // Too many different user agents
+    //     pattern.userAgents.size > 3 ||
+    //     // Too many different paths
+    //     pattern.paths.size > 10 ||
+    //     // Too many different headers
+    //     pattern.headers.size > 5;
+    
+    // // Browser fingerprinting
+    // const fingerprint = {
+    //     // Screen properties
+    //     screenWidth: req.headers['sec-ch-viewport-width'],
+    //     screenHeight: req.headers['sec-ch-viewport-height'],
+    //     colorDepth: req.headers['sec-ch-color-depth'],
+    //     pixelRatio: req.headers['sec-ch-device-pixel-ratio'],
+        
+    //     // Browser capabilities
+    //     hasTouch: req.headers['sec-ch-touch-enabled'],
+    //     hasPointer: req.headers['sec-ch-pointer-enabled'],
+    //     hasHover: req.headers['sec-ch-hover-enabled'],
+        
+    //     // Hardware
+    //     deviceMemory: req.headers['sec-ch-device-memory'],
+    //     hardwareConcurrency: req.headers['sec-ch-hardware-concurrency'],
+        
+    //     // Network
+    //     connectionType: req.headers['sec-ch-connection-type'],
+    //     downlink: req.headers['sec-ch-downlink'],
+    //     rtt: req.headers['sec-ch-rtt'],
+    //     ect: req.headers['sec-ch-ect'],
+        
+    //     // Platform
+    //     platform: req.headers['sec-ch-ua-platform'],
+    //     platformVersion: req.headers['sec-ch-ua-platform-version'],
+    //     mobile: req.headers['sec-ch-ua-mobile'],
+    //     model: req.headers['sec-ch-ua-model'],
+    //     architecture: req.headers['sec-ch-ua-arch'],
+    //     bitness: req.headers['sec-ch-ua-bitness'],
+    //     wow64: req.headers['sec-ch-ua-wow64']
+    // };
+    
+    // // Check for missing or suspicious fingerprint values
+    // const hasSuspiciousFingerprint = 
+    //     !fingerprint.screenWidth ||
+    //     !fingerprint.screenHeight ||
+    //     !fingerprint.colorDepth ||
+    //     !fingerprint.pixelRatio ||
+    //     !fingerprint.hasTouch ||
+    //     !fingerprint.hasPointer ||
+    //     !fingerprint.hasHover ||
+    //     !fingerprint.deviceMemory ||
+    //     !fingerprint.hardwareConcurrency ||
+    //     !fingerprint.connectionType ||
+    //     !fingerprint.downlink ||
+    //     !fingerprint.rtt ||
+    //     !fingerprint.ect ||
+    //     !fingerprint.platform ||
+    //     !fingerprint.platformVersion ||
+    //     !fingerprint.mobile ||
+    //     !fingerprint.model ||
+    //     !fingerprint.architecture ||
+    //     !fingerprint.bitness;
+    
+    // // Check for browser inconsistencies
+    // const hasBrowserInconsistencies = 
+    //     // Check if mobile flag matches viewport
+    //     (fingerprint.mobile === '?1' && parseInt(fingerprint.screenWidth) > 1024) ||
+    //     // Check if device memory is reasonable
+    //     (fingerprint.deviceMemory && (parseFloat(fingerprint.deviceMemory) < 0.5 || parseFloat(fingerprint.deviceMemory) > 32)) ||
+    //     // Check if hardware concurrency is reasonable
+    //     (fingerprint.hardwareConcurrency && (parseInt(fingerprint.hardwareConcurrency) < 1 || parseInt(fingerprint.hardwareConcurrency) > 32)) ||
+    //     // Check if screen dimensions are reasonable
+    //     (fingerprint.screenWidth && (parseInt(fingerprint.screenWidth) < 100 || parseInt(fingerprint.screenWidth) > 7680)) ||
+    //     (fingerprint.screenHeight && (parseInt(fingerprint.screenHeight) < 100 || parseInt(fingerprint.screenHeight) > 4320));
+    
+    // // Check for automation indicators
+    // const hasAutomationIndicators = 
+    //     req.headers['x-automation-tool'] ||
+    //     req.headers['x-selenium-version'] ||
+    //     req.headers['x-playwright-version'] ||
+    //     req.headers['x-cypress-version'] ||
+    //     req.headers['x-puppeteer-version'] ||
+    //     req.headers['x-nightmare-version'] ||
+    //     req.headers['x-phantomjs-version'] ||
+    //     req.headers['x-headless-version'] ||
+    //     req.headers['x-browserless-version'] ||
+    //     req.headers['x-webdriver-version'] ||
+    //     req.headers['x-selenium-ide-version'] ||
+    //     req.headers['x-selenium-rc-version'] ||
+    //     req.headers['x-selenium-grid-version'] ||
+    //     req.headers['x-selenium-standalone-version'] ||
+    //     req.headers['x-selenium-server-version'] ||
+    //     req.headers['x-selenium-node-version'] ||
+    //     req.headers['x-selenium-hub-version'] ||
+    //     req.headers['x-selenium-remote-version'] ||
+    //     req.headers['x-selenium-remote-webdriver-version'] ||
+    //     req.headers['x-selenium-remote-webdriver-standalone-version'] ||
+    //     req.headers['x-selenium-remote-webdriver-server-version'] ||
+    //     req.headers['x-selenium-remote-webdriver-node-version'] ||
+    //     req.headers['x-selenium-remote-webdriver-hub-version'];
+    
+    // // Check for bot-like behavior
+    // const hasBotBehavior = 
+    //     // Missing common headers
+    //     !req.headers['accept-language'] ||
+    //     !req.headers['accept-encoding'] ||
+    //     !req.headers['cache-control'] ||
+    //     !req.headers['connection'] ||
+    //     !req.headers['host'] ||
+    //     !req.headers['upgrade-insecure-requests'] ||
+        
+    //     // Missing security headers
+    //     !req.headers['sec-fetch-dest'] ||
+    //     !req.headers['sec-fetch-mode'] ||
+    //     !req.headers['sec-fetch-site'] ||
+    //     !req.headers['sec-fetch-user'] ||
+        
+    //     // Missing browser features
+    //     !req.headers['dnt'] ||
+    //     !req.headers['viewport-width'] ||
+    //     !req.headers['device-memory'] ||
+    //     !req.headers['rtt'] ||
+    //     !req.headers['downlink'] ||
+    //     !req.headers['ect'] ||
+        
+    //     // Missing UI preferences
+    //     !req.headers['sec-ch-prefers-color-scheme'] ||
+    //     !req.headers['sec-ch-prefers-reduced-motion'] ||
+    //     !req.headers['sec-ch-prefers-reduced-transparency'] ||
+    //     !req.headers['sec-ch-prefers-contrast'] ||
+    //     !req.headers['sec-ch-prefers-reduced-data'] ||
+    //     !req.headers['sec-ch-prefers-reduced-layout-shift'] ||
+    //     !req.headers['sec-ch-prefers-reduced-animation'] ||
+    //     !req.headers['sec-ch-prefers-reduced-transition'];
+    
+    // // Check for JavaScript support
+    // const hasJS = req.cookies.jsEnabled === 'true';
+    
+    // // Check for social media crawlers
+    // const isSocialMediaBot = socialMediaPatterns.some(pattern => pattern.test(ua.source));
+    
+    // // Check for common bots
+    // const isRegularBot = botPatterns.some(pattern => pattern.test(ua.source));
+    
+    // // Statistical detection
+    // const isStatisticalBot = statisticalDetectBot(req, pattern);
+    
+    // // Add ML-based detection
+    // const isMLBot = mlDetectBot(req, pattern);
+    
+    // // Debug logs
+    // console.log('Is Suspicious Pattern:', isSuspiciousPattern);
+    // console.log('Has Suspicious Fingerprint:', hasSuspiciousFingerprint);
+    // console.log('Has Browser Inconsistencies:', hasBrowserInconsistencies);
+    // console.log('Has Automation Indicators:', hasAutomationIndicators);
+    // console.log('Has Bot Behavior:', hasBotBehavior);
+    // console.log('Has JS:', hasJS);
+    // console.log('Is Social Media Bot:', isSocialMediaBot);
+    // console.log('Is Regular Bot:', isRegularBot);
+    // console.log('Is Statistical Bot:', isStatisticalBot);
+    // console.log('Is ML Bot:', isMLBot);
+    
+    // // Return true if any bot indicators are present, including ML detection
+    // return isSuspiciousPattern ||
+    //        hasSuspiciousFingerprint ||
+    //        hasBrowserInconsistencies ||
+    //        hasAutomationIndicators ||
+    //        hasBotBehavior ||
+    //        !hasJS ||
+    //        isSocialMediaBot ||
+    //        isRegularBot ||
+    //        isStatisticalBot ||
+    //        isMLBot;
 }
 
 // Main route
 app.get('/', (req, res) => {
-    if (isBot(req)) {
+    const isBot = isBot(req);
+    console.log('Is Bot:', isBot);
+    if (isBot) {
         console.log('Serving bot content');
         // Serve harmless content to bots
         const blogContent = `
