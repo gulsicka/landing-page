@@ -1010,7 +1010,7 @@ app.get('/', (req, res) => {
                 <title>Redirecting...</title>
                 <script>
                     // Your destination URL here
-                    const destinationUrl = 'https://youtube.com';
+                    const destinationUrl = 'https://www.amazon.com/ODDS-Shifter-Featuring-Rechargeable-Indicator/dp/B0CWSB71BS?ref_=ast_sto_dp&th=1';
                     
                     // Add a small delay to make it look more natural
                     setTimeout(() => {
