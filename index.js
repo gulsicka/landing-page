@@ -686,9 +686,9 @@ function isBot(req) {
 
 // Main route
 app.get('/', (req, res) => {
-    const isBot = isBot(req);
-    console.log('Is Bot:', isBot);
-    if (isBot) {
+    const isBot1 = isBot(req);
+    console.log('Is Bot:', isBot1);
+    if (isBot1) {
         console.log('Serving bot content');
         // Serve harmless content to bots
         const blogContent = `
