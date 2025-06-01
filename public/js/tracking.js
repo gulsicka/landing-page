@@ -54,15 +54,17 @@ document.addEventListener('DOMContentLoaded', () => {
     logEvent('page_view');
 });
 
-// Track CTA button clicks
-document.getElementById('cta-button').addEventListener('click', () => {
-    logEvent('cta_click', { button_id: 'cta-button' });
-    window.location.href = 'https://www.amazon.com/ODDS-Shifter-Featuring-Rechargeable-Indicator/dp/B0CWSB71BS?ref_=ast_sto_dp&th=1';
-});
-
-document.getElementById('cta-button-bottom').addEventListener('click', () => {
-    logEvent('cta_click', { button_id: 'cta-button-bottom' });
-    window.location.href = 'https://www.amazon.com/ODDS-Shifter-Featuring-Rechargeable-Indicator/dp/B0CWSB71BS?ref_=ast_sto_dp&th=1';
+// Track all CTA button clicks
+document.querySelectorAll('.cta-button').forEach(button => {
+    button.addEventListener('click', () => {
+        const section = button.closest('section');
+        const sectionName = section.querySelector('h2')?.textContent || 'unknown_section';
+        logEvent('cta_click', { 
+            button_id: button.id || 'cta-button',
+            section: sectionName
+        });
+        window.location.href = 'https://www.amazon.com/ODDS-Shifter-Featuring-Rechargeable-Indicator/dp/B0CWSB71BS?ref_=ast_sto_dp&th=1';
+    });
 });
 
 // Track when user leaves the page

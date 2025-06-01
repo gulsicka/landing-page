@@ -10,11 +10,14 @@ async function updateDailyStats(eventType) {
     try {
         console.log(`Updating stats for event type: ${eventType}`);
         
-        // First, try to get the single stats record
+        // Get today's date in YYYY-MM-DD format
+        const today = new Date().toISOString().split('T')[0];
+        
+        // Try to get today's stats record
         const { data: existingStats, error: fetchError } = await supabase
             .from('daily_stats')
             .select('*')
-            .limit(1)
+            .eq('date', today)
             .single();
 
         if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
@@ -23,15 +26,15 @@ async function updateDailyStats(eventType) {
         }
 
         if (!existingStats) {
-            // If no stats exist, create the initial record
+            // If no stats exist for today, create a new record
             const newStats = {
-                date: new Date().toISOString().split('T')[0], // Add today's date
+                date: today,
                 page_views: eventType === 'page_view' ? 1 : 0,
                 cta_clicks: eventType === 'cta_click' ? 1 : 0,
                 page_exits: eventType === 'page_exit' ? 1 : 0,
                 total_events: 1
             };
-            console.log('Creating initial stats record:', newStats);
+            console.log('Creating new stats record for today:', newStats);
 
             const { error: insertError } = await supabase
                 .from('daily_stats')
@@ -40,10 +43,10 @@ async function updateDailyStats(eventType) {
             if (insertError) {
                 console.error('Error creating stats:', insertError);
             } else {
-                console.log('Successfully created initial stats record');
+                console.log('Successfully created new stats record for today');
             }
         } else {
-            // Update existing stats
+            // Update today's stats
             const updateData = {
                 total_events: existingStats.total_events + 1
             };
@@ -61,7 +64,7 @@ async function updateDailyStats(eventType) {
                     break;
             }
 
-            console.log('Updating stats:', {
+            console.log('Updating today\'s stats:', {
                 previous: existingStats,
                 update: updateData
             });
@@ -69,12 +72,12 @@ async function updateDailyStats(eventType) {
             const { error: updateError } = await supabase
                 .from('daily_stats')
                 .update(updateData)
-                .eq('id', existingStats.id);
+                .eq('date', today);
 
             if (updateError) {
                 console.error('Error updating stats:', updateError);
             } else {
-                console.log('Successfully updated stats');
+                console.log('Successfully updated today\'s stats');
             }
         }
     } catch (error) {

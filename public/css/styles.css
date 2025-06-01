@@ -124,8 +124,8 @@ html {
 
 /* Custom CTA button */
 .cta-button {
-    background: linear-gradient(135deg, #4A90E2 0%, #7ED321 100%);
-    color: white;
+    background-color: #FBBF24; /* yellow-400 */
+    color: #1F2937; /* gray-900 */
     padding: 1rem 2rem;
     border-radius: 2rem;
     font-weight: bold;
@@ -133,6 +133,7 @@ html {
 }
 
 .cta-button:hover {
+    background-color: #FCD34D; /* yellow-300 */
     transform: translateY(-2px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }

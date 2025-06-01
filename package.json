@@ -1,7 +1,7 @@
 {
-  "name": "product-landing-page",
+  "name": "landing-page",
   "version": "1.0.0",
-  "description": "Product landing page with bot detection and analytics",
+  "description": "landing page",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
