@@ -19,14 +19,14 @@ app.get('/api/getDailyStats', getDailyStats);
 
 // Main route handler with bot detection
 app.get('/', (req, res) => {
-    const isBot1 = isBot(req);
+    // const isBot1 = isBot(req);
     
-    if (isBot1) {
-        res.sendFile(path.join(__dirname, 'public', 'dog-care.html'));
-    } else {
+    // if (isBot1) {
+    //     res.sendFile(path.join(__dirname, 'public', 'dog-care.html'));
+    // } else {
         res.sendFile(path.join(__dirname, 'public', 'index.html'));
-    }
-    console.log('=== End Main Route ===');
+    // }
+    // console.log('=== End Main Route ===');
 });
 
 app.use(express.static('public'));
