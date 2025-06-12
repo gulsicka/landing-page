@@ -63,7 +63,7 @@ document.querySelectorAll('.cta-button').forEach(button => {
             button_id: button.id || 'cta-button',
             section: sectionName
         });
-        window.location.href = 'https://www.amazon.com/ODDS-Shifter-Featuring-Rechargeable-Indicator/dp/B0CWSB71BS?ref_=ast_sto_dp&th=1';
+        window.location.href = 'https://www.amazon.com/ODDS-Shifter-Featuring-Rechargeable-Indicator/dp/B0CWS7ZJTV?maas=maas_adg_C145EEC56A111949CD5C5C5FF0D05E46_afap_abs&ref_=aa_maas&tag=maas&th=1';
     });
 });
 
