@@ -130,6 +130,7 @@ html {
     border-radius: 2rem;
     font-weight: bold;
     transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
 .cta-button:hover {
@@ -138,12 +139,19 @@ html {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.hero-btn {
+    margin: 0 auto !important;
+    position: relative;
+    top: -90px;
+    font-size: 20px !important;
+}
+
 /* Hero CTA Button */
 #cta-button {
     background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
     border: 2px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(5px);
-    animation: pulse 2s infinite;
+    animation: none;
 }
 
 #cta-button:hover {
@@ -152,25 +160,162 @@ html {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
-@keyframes pulse {
+/* Regular CTA Button Pulse */
+.cta-button:not(#cta-button) {
+    animation: buttonPulse 2s infinite;
+}
+
+@keyframes buttonPulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4);
+        box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7);
     }
     70% {
-        box-shadow: 0 0 0 10px rgba(255, 215, 0, 0);
+        box-shadow: 0 0 0 10px rgba(251, 191, 36, 0);
     }
     100% {
-        box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
+        box-shadow: 0 0 0 0 rgba(251, 191, 36, 0);
     }
 }
 
 /* Custom responsive adjustments */
 @media (max-width: 768px) {
+
+    #cta-button {
+        height: 35px;
+        top: -40px;
+    }
+
     .section-spacing {
         padding: 3rem 0;
     }
     
     .container-custom {
         padding: 0 0.5rem;
+    }
+
+    /* Button size adjustments for mobile */
+    .cta-button {
+        padding: 0.35rem 0.75rem;
+        font-size: 16px;
+    }
+
+    #cta-button {
+        padding: 4px 14px;
+        font-size: 16px;
+        transform: scale(0.8);
+    }
+
+    .bg-two-btn {
+        height: 35px;
+        position: absolute;
+        padding: 5px 20px !important;
+        top: -12px;
+        /* left: -38px; */
+    }
+
+    
+
+    /* Container padding */
+    .container {
+        padding: 0 0.5rem;
+    }
+
+    /* Image adjustments */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Text adjustments */
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    /* Grid adjustments */
+    .grid {
+        gap: 1rem;
+    }
+}
+
+/* Specific media query for tablets and smaller devices */
+@media (min-width: 640px) and (max-width: 767px) {
+    .bg-two-btn {
+       left: -2px;
+       top: -24px;
+    }
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .cta-button {
+        padding: 0.875rem 1.75rem;
+        font-size: 1rem;
+    }
+
+    #cta-button {
+        padding: 0.875rem 1.75rem;
+        font-size: 1rem;
+    }
+}
+
+/* Ensure images are responsive */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Ensure iframe is responsive */
+iframe {
+    max-width: 100%;
+    width: 100%;
+}
+
+/* Ensure proper spacing on all devices */
+.section {
+    padding: 2rem 0;
+}
+
+@media (min-width: 1025px) {
+    .section {
+        padding: 4rem 0;
+    }
+}
+
+/* Flash Sale Timer */
+.flash-sale-timer {
+    position: relative;
+    z-index: 50;
+}
+
+.timer-block {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    min-width: 3rem;
+    text-align: center;
+}
+
+.timer-block span:first-child {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 640px) {
+    .flash-sale-timer {
+        font-size: 0.875rem;
+    }
+    
+    .timer-block {
+        min-width: 2.5rem;
+        padding: 0.15rem 0.35rem;
+    }
+    
+    .timer-block span:first-child {
+        font-size: 1rem;
     }
 } 

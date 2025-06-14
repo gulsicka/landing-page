@@ -9,6 +9,32 @@
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body class="bg-gray-50">
+    <!-- Flash Sale Timer -->
+    <div class="flash-sale-timer bg-red-600 text-white py-2">
+        <div class="container mx-auto px-4 flex items-center justify-center space-x-4">
+            <span class="font-bold">FLASH SALE: 20% OFF</span>
+            <div class="flex items-center space-x-2">
+                <span>Ends in:</span>
+                <div class="flex space-x-1">
+                    <div class="timer-block">
+                        <span id="hours">00</span>
+                        <span class="text-xs">hrs</span>
+                    </div>
+                    <span>:</span>
+                    <div class="timer-block">
+                        <span id="minutes">00</span>
+                        <span class="text-xs">min</span>
+                    </div>
+                    <span>:</span>
+                    <div class="timer-block">
+                        <span id="seconds">00</span>
+                        <span class="text-xs">sec</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Hero Section -->
     <section class="relative">
         <!-- Background Image -->
@@ -17,16 +43,31 @@
         </div>
         
         <!-- CTA Button -->
-        <div class="absolute bottom-8 left-[5.5rem]">
-            <button id="cta-button" class="cta-button bg-yellow-400 hover:bg-yellow-300 text-gray-900 px-8 py-4 rounded-full text-xl font-bold transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center space-x-2 group">
+        <div class="absolute w-full">
+            <button id="cta-button" class="cta-button hero-btn bg-yellow-400 hover:bg-yellow-300 text-gray-900 px-8 py-4 rounded-full font-bold transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center space-x-2 group">
                 <span class="relative">
                     <span class="animate-bounce inline-block">Buy</span>
-                    <span class="ml-2">Yours Now</span>
+                    <span class="ml-2">Now on</span>
                 </span>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon" class="h-5 w-auto ml-1 mt-[15px]">
                 <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
             </button>
         </div>
     </section>
+
+    <!-- Active Viewers Section -->
+    <div class="bg-gradient-to-r from-red-500 to-red-600 py-3 shadow-md">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-center space-x-3 text-white">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-eye animate-pulse"></i>
+                    <span class="font-medium">Live Viewers:</span>
+                    <span id="activeViewers" class="font-bold text-2xl">23</span>
+                </div>
+                <span class="text-sm opacity-80">Don't miss out - Limited stock available!</span>
+            </div>
+        </div>
+    </div>
 
     <!-- Video Demo Section -->
     <section class="py-16 bg-gray-100">
@@ -35,7 +76,7 @@
             <div class="max-w-4xl mx-auto">
                 <div class="aspect-w-9 aspect-h-16 md:aspect-w-16 md:aspect-h-9">
                     <iframe 
-                        class="w-full h-[500px] md:h-[600px] rounded-lg shadow-lg"
+                        class="w-full h-[300px] md:h-[500px] lg:h-[600px] rounded-lg shadow-lg"
                         src="https://www.youtube.com/embed/mYJhNGjVLMI"
                         title="Odds Shifter Demo"
                         frameborder="0"
@@ -44,7 +85,7 @@
                     </iframe>
                 </div>
                 <div class="text-center mt-8">
-                    <button class="cta-button bg-yellow-400 text-gray-900 px-8 py-4 rounded-full text-xl font-bold hover:bg-yellow-300 transition duration-300 shadow-lg hover:shadow-xl">
+                    <button class="cta-button bg-yellow-400 text-gray-900 px-8 py-4 rounded-full  font-bold hover:bg-yellow-300 transition duration-300 shadow-lg hover:shadow-xl">
                         Buy Now on Amazon
                     </button>
                 </div>
@@ -55,9 +96,9 @@
     <!-- Background Image 2 Section -->
     <section class="w-full relative">
         <img src="/images/bg2.png" alt="Odds Shifter Background" class="w-full h-auto">
-        <div class="absolute bottom-8 left-12">
-            <button class="cta-button bg-yellow-400 text-gray-900 px-8 py-4 rounded-full text-xl font-bold hover:bg-yellow-300 transition duration-300 shadow-lg hover:shadow-xl">
-                Buy Now on Amazon
+        <div class="absolute bottom-8 left-12 md:left-12 sm:left-6">
+            <button class="cta-button bg-two-btn bg-yellow-400 text-gray-900 px-8 py-4 rounded-full  font-bold hover:bg-yellow-300 transition duration-300 shadow-lg hover:shadow-xl">
+                Buy on Amazon
             </button>
         </div>
     </section>
@@ -78,7 +119,7 @@
                 </div>
             </div>
             <div class="text-center mt-12">
-                <button class="cta-button bg-yellow-400 text-gray-900 px-8 py-4 rounded-full text-xl font-bold hover:bg-yellow-300 transition duration-300 shadow-lg hover:shadow-xl">
+                <button class="cta-button bg-yellow-400 text-gray-900 px-8 py-4 rounded-full  font-bold hover:bg-yellow-300 transition duration-300 shadow-lg hover:shadow-xl">
                     Buy Now on Amazon
                 </button>
             </div>
@@ -125,7 +166,7 @@
                             <i class="fas fa-star"></i>
                         </div>
                     </div>
-                    <p class="text-gray-600 mb-4">"Bought this to go on walks with my pets. It is very high quality, easy to carry in your pocket or clip to your was it band. I have small hands so it fits comfortable and easy to use. Has maintain a full charge for weeks now. The safety feature is great so you don't shock yourself by accident."</p>
+                    <p class="text-gray-600 mb-4">"Bought this to go on walks with my pets. It is very high quality, easy to carry in your pocket or clip to your waist band. I have small hands so it fits comfortable and easy to use. Has maintain a full charge for weeks now. The safety feature is great so you don't shock yourself by accident."</p>
                     <p class="font-semibold">- Kevil</p>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-lg">
@@ -138,12 +179,12 @@
                             <i class="fas fa-star-half-alt"></i>
                         </div>
                     </div>
-                    <p class="text-gray-600 mb-4">"I love it , people don't even notice it in my purse lol"</p>
+                    <p class="text-gray-600 mb-4">"I love it, people don't even notice it in my purse lol"</p>
                     <p class="font-semibold">- Emily R.</p>
                 </div>
             </div>
             <div class="text-center mt-12">
-                <button class="cta-button bg-yellow-400 text-gray-900 px-8 py-4 rounded-full text-xl font-bold hover:bg-yellow-300 transition duration-300 shadow-lg hover:shadow-xl">
+                <button class="cta-button bg-yellow-400 text-gray-900 px-8 py-4 rounded-full  font-bold hover:bg-yellow-300 transition duration-300 shadow-lg hover:shadow-xl">
                     Buy Now on Amazon
                 </button>
             </div>
@@ -154,7 +195,7 @@
     <section class="py-16 bg-gradient-to-r from-blue-500 to-purple-600">
         <div class="container mx-auto px-6 text-center text-white">
             <h2 class="text-3xl font-bold mb-8">Ready to Shift the Odds in Your Favor?</h2>
-            <button class="cta-button bg-yellow-400 text-gray-900 px-8 py-4 rounded-full text-xl font-bold hover:bg-yellow-300 transition duration-300 shadow-lg hover:shadow-xl">
+            <button class="cta-button bg-yellow-400 text-gray-900 px-8 py-4 rounded-full  font-bold hover:bg-yellow-300 transition duration-300 shadow-lg hover:shadow-xl">
                 Buy Now on Amazon
             </button>
         </div>

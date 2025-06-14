@@ -4,6 +4,47 @@ const sessionId = crypto.randomUUID();
 // Track page load time
 const pageLoadTime = Date.now();
 
+// Active Viewers Counter
+let currentViewers = null;
+
+function updateViewers() {
+    if (currentViewers === null) {
+        // Generate a random number between 100 and 300 for active viewers
+        currentViewers = Math.floor(Math.random() * 200) + 100;
+    }
+    
+    // Add some random fluctuation to make it look more dynamic
+    const fluctuation = Math.random() > 0.5 ? 1 : -1;
+    currentViewers = Math.max(100, Math.min(300, currentViewers + fluctuation));
+    
+    document.getElementById('activeViewers').textContent = currentViewers;
+}
+
+// Update viewers every 30 seconds to show activity
+setInterval(updateViewers, 30000);
+updateViewers(); // Initial call
+
+// Flash Sale Timer
+function updateTimer() {
+    const now = new Date();
+    const midnight = new Date();
+    midnight.setHours(24, 0, 0, 0);
+    
+    const timeLeft = midnight - now;
+    
+    const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+    
+    document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+    document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+    document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+}
+
+// Update timer every second
+setInterval(updateTimer, 1000);
+updateTimer(); // Initial call
+
 // Track time spent on page
 let timeSpent = 0;
 const timeInterval = setInterval(() => {
